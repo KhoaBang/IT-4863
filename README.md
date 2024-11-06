@@ -1,6 +1,15 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
+create .evn file:
+
+```bash
+ELASTICSEARCH_NODE=http://localhost:9200
+ELASTICSEARCH_USERNAME=name
+ELASTICSEARCH_PASSWORD=your_pass
+DATA_INDEX=law_v2
+
+```
 
 First, run the development server:
 
@@ -14,13 +23,7 @@ pnpm dev
 bun dev
 ```
 
-``` .evn-file
-ELASTICSEARCH_NODE=http://localhost:9200
-ELASTICSEARCH_USERNAME=name
-ELASTICSEARCH_PASSWORD=your_pass
-DATA_INDEX=law_v2
 
-```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
