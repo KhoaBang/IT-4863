@@ -14,6 +14,14 @@ pnpm dev
 bun dev
 ```
 
+``` .evn-file
+ELASTICSEARCH_NODE=http://localhost:9200
+ELASTICSEARCH_USERNAME=name
+ELASTICSEARCH_PASSWORD=your_pass
+DATA_INDEX=law_v2
+
+```
+
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
