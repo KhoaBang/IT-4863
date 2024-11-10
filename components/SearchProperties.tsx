@@ -1,7 +1,6 @@
 "use client"
 import {Input} from "antd"
 import { useDebouncedCallback } from 'use-debounce';
-import { SearchOutlined } from '@ant-design/icons';
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';import React from 'react'
 
 function SearchProperties() {

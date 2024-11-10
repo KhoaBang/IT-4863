@@ -13,7 +13,7 @@ export async function GET(req: Request) {
     }
   
     const result= await client.search<ElasticsearchResponse>({
-        index: 'law_v2',
+        index: process.env. DATA_INDEX,
         body: {
           size: 10,
           query: {
@@ -24,7 +24,7 @@ export async function GET(req: Request) {
           }
         }
       });
-    
+      console.log(result)
       console.log(result.hits.hits)
       const documents = result.hits.hits.map(hit => hit._source);
 
