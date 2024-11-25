@@ -1,0 +1,94 @@
+{
+    "settings": {
+      "analysis": {
+        "analyzer": {
+          "legal_vi_analyzer": {
+            "type": "custom",
+            "tokenizer": "vi_tokenizer",
+            "filter": [
+              "lowercase",
+              "custom_stopwords_filter",
+              "synonym_filter",
+              "remove_punctuation"
+            ]
+          },
+          "madieu_analyzer": {
+            "type": "custom",
+            "tokenizer": "whitespace",
+            "filter": "lowercase"
+          }
+        },
+        "filter": {
+          "custom_stopwords_filter": {
+            "type": "stop",
+            "stopwords": ["chứ", "đó", "này", "là", "vậy", "cứ", "gì"]
+          },
+          "synonym_filter": {
+            "type": "synonym",
+            "synonyms": [
+              "luật, pháp luật, quy định, điều lệ, quy tắc, luật pháp",
+              "hợp pháp, hợp lệ, đúng luật, chính đáng, chính thống, đúng quy định",
+              "trái phép, phạm pháp, phi pháp, trái luật",
+              "pháp lý, tư pháp, pháp chế, pháp quyền, pháp định",
+              "điều luật, khoản luật, mục luật, điều khoản",
+              "thẩm quyền, quyền hạn, quyền lực",
+              "vi phạm, xâm phạm, trái luật",
+              "hình phạt, xử phạt, án phạt, chế tài",
+              "tội phạm, tội đồ, kẻ vi phạm, kẻ phạm pháp",
+              "nghĩa vụ, bổn phận, phận sự",
+              "bằng chứng, chứng cứ, vật chứng",
+              "phán quyết, quyết định, bản án",
+              "tòa án, pháp đình, phiên tòa",
+              "luật sư, luật gia",
+              "tranh chấp, xung đột, mâu thuẫn",
+              "hòa giải, thương lượng, đàm phán, giải hòa",
+              "kháng cáo, khiếu nại, kháng nghị",
+              "quyền lợi, lợi ích, phúc lợi",
+              "hợp đồng, giao kèo, cam kết",
+              "chứng thực, công chứng, xác minh",
+              "truy tố, buộc tội, cáo buộc",
+              "công lý, lẽ phải, chính nghĩa",
+              "thủ tục, quy trình, cách thức",
+              "quyền sở hữu, quyền sử dụng",
+              "thời hiệu, thời hạn, kỳ hạn",
+              "bắt giữ, giam giữ, giam cầm",
+              "tự do, độc lập, tự trị",
+              "xét xử, phán xét, xử án",
+              "hình thức, biện pháp, phương án",
+              "án lệ, tiền lệ",
+              "khởi kiện, tố cáo, kiện tụng",
+              "thi hành, áp dụng, chấp hành",
+              "phạm nhân, tù nhân, bị cáo",
+              "lệnh bắt, lệnh giam",
+              "tạm giam, giam lỏng",
+              "giám định, kiểm định, thẩm định",
+              "chế tài, xử phạt",
+              "quy định, điều khoản, nội quy",
+              "hành vi, hành động, cử chỉ",
+              "truy cứu, điều tra",
+              "biên bản, báo cáo, hồ sơ",
+              "khiếu nại, tố cáo",
+              "chứng từ, tài liệu",
+              "bảo vệ, giữ gìn",
+              "LQ, quốc hội, luật quốc hội",
+              "PL, pháp lệnh, Ủy ban thường vụ Quốc hội",
+              "LC, lệnh, chủ tịch nước",
+              "QĐ, quyết định",
+              "NĐ, nghị định",
+              "NQ, nghị quyết",
+              "NL, nghị quyết liên tịch",
+              "CT, chỉ thị",
+              "TT, thông tư",
+              "TL, thông tư liên tịch"
+            ]
+          },
+          "remove_punctuation": {
+            "type": "pattern_replace",
+            "pattern": "[\\p{Punct}]",
+            "replacement": ""
+          }
+        }
+      }
+    }
+  }
+  
