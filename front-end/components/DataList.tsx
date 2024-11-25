@@ -33,7 +33,8 @@ const DataList: React.FC<IDataListProps> = ({ data }) => {
                             <Space direction="vertical">
                                 <div>{item.tendemuc}</div>
                                 <div>{item.tenchuong}</div>
-                                <div>{item.tendieu}</div>
+                                <div>{item.madieu}</div>
+                                <div>{item.noidungtendieu}</div>
                             </Space>
                         }
                     />

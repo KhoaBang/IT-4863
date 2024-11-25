@@ -16,10 +16,32 @@ export async function GET(req: Request) {
         index: process.env. DATA_INDEX,
         body: {
           size: 10,
-          query: {
-            multi_match: {
-              query: term,
-              fields: ["tendieu^10", "noidung^9"]
+          "query": {
+            "bool": {
+              "should": [
+                {
+                  "multi_match": {
+                    "query": term,
+                    "fields": [
+                      "tenchude^1", 
+                      "tendemuc^1.5", 
+                      "tenchuong^2", 
+                      "noidung^9", 
+                      "noidungtendieu^10"
+                    ],
+                    "fuzziness": "AUTO",
+                    "minimum_should_match": "75%"
+                  }
+                },
+                {
+                  "match": {
+                    "madieu": {
+                      "query":term,
+                      "boost": 20
+                    }
+                  }
+                }
+              ]
             }
           }
         }
