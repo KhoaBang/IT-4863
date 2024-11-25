@@ -1,47 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Elasticsearch Analysis Vietnamese Setup
 
-## Getting Started
-create .evn file:
+## Steps to Setup and Use
 
+### Step 1: Open Docker Desktop
+Navigate to the directory containing `elasticsearch-analysis-Vietnamese`:
+IT-4863\Elasticsearch_config\elasticsearch-analysis-vietnamese
+
+### Step 2: Update ELASTIC_PASSWORD
+Edit the `docker-compose.yaml` file located in:
+IT-4863\Elasticsearch_config\elasticsearch-analysis-vietnamese\docker-compose.yaml
+
+Replace the `ELASTIC_PASSWORD` variable with your desired password. The default password is `28102003`.
+
+### Step 3: Build and Start the Docker Containers
+In Docker Desktop, execute the following commands:
 ```bash
-ELASTICSEARCH_NODE=http://localhost:9200
-ELASTICSEARCH_USERNAME=name
-ELASTICSEARCH_PASSWORD=your_pass
-DATA_INDEX=law_v2
-
+docker compose build
+docker compose up
 ```
 
-First, run the development server:
+### Step 4: Configure Elasticsearch and Upload Data
+Open cmd and navigate to:
+IT-4863\Elasticsearch_config\Elastic
+Perform the following operations, replacing ELASTIC_PASSWORD with the password you set in Step 2.
+Configure Settings
+Run:
+```
+curl -u elastic:ELASTIC_PASSWORD -X PUT "http://localhost:9200/phapdien_final" \
+-H "Content-Type: application/json" -d @settings.json
+```
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Configure Mappings
+Run:
+```
+curl -u elastic:ELASTIC_PASSWORD -X PUT "http://localhost:9200/phapdien_final/_mapping" \
+-H "Content-Type: application/json" -d @mappings.json
+```
+
+Upload Data
+Run:
+```
+curl -u elastic:ELASTIC_PASSWORD -H "Content-Type: application/json" \
+-XPOST "http://localhost:9200/phapdien_final/_bulk?pretty" --data-binary @phapdien_final.ndjson
+```
+
+### Step 5: Query Data
+Navigate to:
+IT-4863\Elasticsearch_config\Elastic\query_without_fuzziness.json
+Replace "YOUR_QUERY" with your desired query.
+
+Run the following command:
+```
+curl -u elastic:ELASTIC_PASSWORD -H "Content-Type: application/json" \
+-X GET "http://localhost:9200/phapdien_final/_search" --data-binary "@query_without_fuzziness.json"
 ```
 
 
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

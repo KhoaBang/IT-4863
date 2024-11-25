@@ -1,0 +1,31 @@
+{
+    "query": {
+      "bool": {
+        "should": [
+          {
+            "multi_match": {
+              "query": "điều 4.1.lq.7",
+              "fields": [
+                "tenchude^1", 
+                "tendemuc^1.5", 
+                "tenchuong^2", 
+                "noidung^9", 
+                "noidungtendieu^10"
+              ],
+              "fuzziness": "AUTO",
+              "minimum_should_match": "75%"
+            }
+          },
+          {
+            "match": {
+              "madieu": {
+                "query": "điều 4.1.lq.7",
+                "boost": 20
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+  

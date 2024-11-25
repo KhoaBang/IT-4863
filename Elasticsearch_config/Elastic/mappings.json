@@ -1,0 +1,28 @@
+{
+    "properties": {
+        "tenchude": {
+            "type": "text",
+            "analyzer": "legal_vi_analyzer"
+        },
+        "tendemuc": {
+            "type": "text",
+            "analyzer": "legal_vi_analyzer"
+        },
+        "tenchuong": {
+            "type": "text",
+            "analyzer": "legal_vi_analyzer"
+        },
+        "noidung": {
+            "type": "text",
+            "analyzer": "legal_vi_analyzer"
+        },
+        "madieu": {
+            "type": "text",
+            "analyzer": "madieu_analyzer"
+        },
+        "noidungtendieu": {
+            "type": "text",
+            "analyzer": "legal_vi_analyzer"
+        }
+    }
+}

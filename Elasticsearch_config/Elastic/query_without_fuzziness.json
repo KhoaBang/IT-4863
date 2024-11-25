@@ -1,0 +1,8 @@
+{
+    "query": {
+        "multi_match": {
+            "query": "YOUR_QUERY",
+            "fields": ["tenchude^1", "tendemuc^1.5", "tenchuong^2", "noidung^9", "madieu^20", "noidungtendieu^10"]
+        }
+    }
+}
