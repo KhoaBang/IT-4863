@@ -1,4 +1,4 @@
-# Elasticsearch Analysis Vietnamese Setup
+# Vietnamese legal documents retrieval system based on Elasticsearch
 
 ## Steps to Setup and Use
 
