@@ -3,8 +3,9 @@
 ## Steps to Setup and Use
 
 ### Step 1: Open Docker Desktop
-clone https://github.com/duydo/elasticsearch-analysis-vietnamese.git
-Navigate to the directory containing elasticsearch-analysis-Vietnamese
+Clone https://github.com/duydo/elasticsearch-analysis-vietnamese.git
+
+Navigate to the directory containing elasticsearch-analysis-vietnamese
 
 ### Step 2: Update ELASTIC_PASSWORD
 Edit the `docker-compose.yaml` file located in:
@@ -49,8 +50,9 @@ curl -u elastic:ELASTIC_PASSWORD -H "Content-Type: application/json" -XPOST "htt
 
 Delete index if you want
 Run:
+```
 curl -u elastic:ELASTIC_PASSWORD -X DELETE "http://localhost:9200/phapdien_final"
-
+```
 
 ### Step 5: Query Data
 Navigate to:
@@ -59,8 +61,7 @@ Replace "YOUR_QUERY" with your desired query.
 
 Run the following command:
 ```
-curl -u elastic:ELASTIC_PASSWORD -H "Content-Type: application/json" \
--X GET "http://localhost:9200/phapdien_final/_search" --data-binary "@query_without_fuzziness.json"
+curl -u elastic:ELASTIC_PASSWORD -H "Content-Type: application/json" -X GET "http://localhost:9200/phapdien_final/_search" --data-binary "@query_without_fuzziness.json"
 ```
 
 ### Step 6: Run interface
