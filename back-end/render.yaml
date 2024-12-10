@@ -1,0 +1,39 @@
+services:
+  - name: elastic
+    type: service
+    env: docker
+    plan: free  # Adjust the plan as per your needs
+    docker:
+      image: nguyensikhoabang899/my-elasticsearch-image:latest
+    envVars:
+      - key: ELASTICSEARCH_USERNAME
+        value: elastic
+      - key: ELASTICSEARCH_PASSWORD
+        value: 23062003
+    ports:
+      - port: 9200
+    restartPolicy: unless_stopped
+
+  - name: backend
+    type: web
+    env: docker
+    plan: free  # Adjust the plan as per your needs
+    docker:
+      buildCommand: docker build -t backend .
+      runCommand: ["wait-for-it", "elastic:9200", "--", "npm", "start"]
+    envVars:
+      - key: ELASTICSEARCH_NODE
+        value: http://elastic:9200
+      - key: ELASTICSEARCH_USERNAME
+        value: elastic
+      - key: ELASTICSEARCH_PASSWORD
+        value: 23062003
+      - key: DATA_INDEX
+        value: your-data-index  # Replace with actual value
+      - key: PORT
+        value: 9999
+    ports:
+      - port: 9999
+    dependsOn:
+      - elastic
+    restartPolicy: unless_stopped
