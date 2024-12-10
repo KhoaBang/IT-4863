@@ -12,7 +12,6 @@ RUN apk add --no-cache curl bash && \
     chmod +x /usr/local/bin/wait-for-it
 
 # Install npm dependencies
-USER node
 RUN npm install
 
 # Copy application files into the container
