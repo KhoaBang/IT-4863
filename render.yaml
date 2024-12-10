@@ -1,6 +1,6 @@
 services:
   - name: elastic
-    type: service
+    type: web
     env: docker
     plan: free  # Adjust the plan as per your needs
     docker:
