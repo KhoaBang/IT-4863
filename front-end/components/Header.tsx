@@ -6,9 +6,9 @@ export default function Header(){
         <nav className="nav">
             <div className="flex-between">
                 <img src={logo.src} alt='logo' width={100} className="pointer"/>
-                <h2 className="hero-title">SOL3</h2>
-                <h3 className="hero-subtitle">Tìm kiếm thông tin pháp lý</h3>
                 <SearchProperties/>
+                <h2 className="hero-title">SOL3</h2>
+               
             </div>
         </nav>
     ) 

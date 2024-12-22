@@ -1,36 +1,39 @@
-"use client"
-import {Input} from "antd"
-import { useDebouncedCallback } from 'use-debounce';
-import { useSearchParams, usePathname, useRouter } from 'next/navigation';
-import React from 'react'
+"use client";
+import { Input } from "antd";
+import { useDebouncedCallback } from "use-debounce";
+import { useSearchParams, usePathname, useRouter } from "next/navigation";
+import React from "react";
+import { Suspense } from "react";
 
 function SearchProperties() {
-    const searchParams = useSearchParams();
-    const pathname = usePathname();
-    const { replace } = useRouter();
-    const handleSearch = useDebouncedCallback((term) => {
-        const params = new URLSearchParams(searchParams);
-        if (term) {
-            params.set('query', term);
-          } else {
-            params.delete('query');
-          }
-          replace(`${pathname}?${params.toString()}`);
-      }, 300);
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const { replace } = useRouter();
+  const handleSearch = useDebouncedCallback((term) => {
+    const params = new URLSearchParams(searchParams);
+    if (term) {
+      params.set("query", term);
+    } else {
+      params.delete("query");
+    }
+    replace(`${pathname}?${params.toString()}`);
+  }, 300);
   return (
     <div>
+      <Suspense fallback={<div>Loading...</div>}>
         <Input.Search
-              size="large"
-            //   enterButton="Tìm kiếm"
-              placeholder="Searching..."
-            //   prefix={<SearchOutlined />}
-              onChange={(e) => {
-                handleSearch(e.target.value);
-              }}
-              defaultValue={searchParams.get('query')?.toString()}
-            />
+          size="large"
+          //   enterButton="Tìm kiếm"
+          placeholder="Searching..."
+          //   prefix={<SearchOutlined />}
+          onChange={(e) => {
+            handleSearch(e.target.value);
+          }}
+          defaultValue={searchParams.get("query")?.toString()}
+        />
+      </Suspense>
     </div>
-  )
+  );
 }
 
-export default SearchProperties
+export default SearchProperties;

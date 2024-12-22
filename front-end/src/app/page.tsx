@@ -1,25 +1,25 @@
 import DataList from "../../components/DataList";
-const DataView = async (props: {
+
+// Define the Page component
+const Page = async (props: {
   searchParams?: Promise<{
     query?: string;
-    page?: string;
+    pagenum?: string;
   }>;
 }) => {
   const searchParams = await props.searchParams;
   const query = searchParams?.query || '';
-  // const currentPage = Number(searchParams?.page) || 1;
-    const encodedTerm = encodeURIComponent(query);
-    const res = await fetch(`http://localhost:3000/api?term=${encodedTerm}`);
-    const kq = await res.json();
-    const {documents}= kq;
-
-    console.log("check data", documents);
-
-    // Return the fetched data
-    return (
+  const currentPage = Number(searchParams?.pagenum) || 1;
+  const encodedTerm = encodeURIComponent(query);
+  
+  // Fetch the data from the backend API
+  const res = await fetch(`${process.env.BACKEND}?term=${encodedTerm}&pagenum=${currentPage}`);
+  const kq = await res.json();
+  return (
     <div>
-      <DataList data={documents}/>
-    </div>)
-  };
+      <DataList data={kq} />
+    </div>
+  );
+};
 
-  export default DataView
+export default Page;

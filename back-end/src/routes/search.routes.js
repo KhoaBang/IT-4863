@@ -3,8 +3,7 @@ const client = require('../elastic/elastic.conector');
 
 const router = Router();
 
-
-router.get('/search', async (req, res) => {
+router.get('/search', async (req, res,next) => {
     try {
       const { term } = req.query; // Extract 'term' from URL parameters
       const { pagenum = 1 } = req.query; // Extract 'pagenum' from query parameters, default to 1
@@ -68,8 +67,7 @@ router.get('/search', async (req, res) => {
         results: documents,
       });
     } catch (error) {
-      console.error('Error executing search:', error);
-      res.status(500).json({ error: 'Internal Server Error' });
+      next(error);
     }
   });
   

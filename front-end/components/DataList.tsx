@@ -1,50 +1,115 @@
-'use client';
-import React from 'react';
-import { List, Space } from 'antd';
-import { dieu } from '../lib/definitions'; // Ensure 'dieu' is correctly defined
+"use client";
+import React, { useState } from "react";
+import { List, Button, Popover, Pagination } from "antd";
+import { dieu } from "../lib/definitions"; // Ensure 'dieu' is correctly defined
+import { useSearchParams, usePathname, useRouter } from "next/navigation";
 
 interface IDataListProps {
-    data: dieu[] | []; // Keeping the type as you defined
+  data: {
+    results: dieu[];
+    meta_data: { total: number };
+  };
 }
 
 const DataList: React.FC<IDataListProps> = ({ data }) => {
-    // Function to normalize whitespace
-    const normalizeText = (text: string) => {
-        // Replace multiple whitespace characters (spaces, tabs, newlines) with a single space
-        return text.replace(/[ \t]+/g, ' ').replace(/\n{2,}/g, '\n').trim(); // trim() removes leading and trailing whitespace
-    };
+  const { results = [], meta_data = { total: 0 } } = data || {};
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const { replace } = useRouter();
+  const [currentPage, setCurrentPage] = useState(1);
 
-    return (
-        <List
-            itemLayout="vertical"
-            size="large"
-            pagination={{
-                onChange: (page) => {
-                    console.log(`Page: ${page}`);
-                },
-                pageSize: 5,
-            }}
-            dataSource={data}
-            renderItem={(item) => (
-                <List.Item key={item.tendieu}>
-                    <List.Item.Meta
-                        title={item.tenchude}
-                        description={
-                            <Space direction="vertical">
-                                <div>{item.tendemuc}</div>
-                                <div>{item.tenchuong}</div>
-                                <div>{item.madieu}</div>
-                                <div>{item.noidungtendieu}</div>
-                            </Space>
-                        }
-                    />
-                    <div style={{ whiteSpace: 'pre-wrap' }}>
-                        {normalizeText(item.noidung)}
-                    </div>
-                </List.Item>
-            )}
-        />
-    );
+  // Handle pagination changes
+  const handlePagination = (pagenum: number) => {
+    const params = new URLSearchParams(searchParams);
+    params.set("pagenum", pagenum.toString());
+    replace(`${pathname}?${params.toString()}`);
+    setCurrentPage(pagenum); // Update the current page
+  };
+
+  // Check for empty results
+  if (results.length === 0) {
+    return <div>No results found.</div>;
+  }
+
+  return (
+    <div>
+      <List
+        itemLayout="vertical"
+        size="large"
+        dataSource={results}
+        renderItem={(item) => {
+          const content = (
+            <div>
+              <div>{item.tenchude}</div>
+              <div>{item.tendemuc}</div>
+              <div>{item.tenchuong}</div>
+            </div>
+          );
+
+          return (
+            <List.Item key={item.tendieu}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between", // This will place the elements at the ends
+                  alignItems: "center", // Ensures the items are vertically aligned
+                }}
+              >
+                <b>{item.noidungmadieu}</b>
+                <Popover content={content} title={item.madieu} trigger="hover">
+                <Button type="primary">Chi tiết</Button>
+                </Popover>
+              </div>
+
+              <div style={{ whiteSpace: "pre-wrap" }}>
+                {item.noidung.map((text, index) => {
+                  // Regular expressions to match a number or a lowercase letter at the start
+                  const numberRegex = /^\d+\./; // Match numbers followed by a period (e.g., 1.)
+                  const lowercaseRegex =
+                    /^[a-zảắầẫẩằẳếềểễệốồổỗơởỡùủũỳỹđ]+[\)\.]/; // Match Vietnamese lowercase letter followed by `)` or `.`
+                  const commonIndentRegex = /^\-/; // Match common indentation
+                  let indent = 0;
+                  let firstPart = "";
+                  let restPart = text;
+
+                  // Check if the text starts with a number followed by a period
+                  if (numberRegex.test(text.trim())) {
+                    indent = 1; // Number starts, 1 tab
+                    const match = text.match(numberRegex); // Match the number and period
+                    firstPart = match ? match[0] : ""; // Get the matched number (e.g., "1.")
+                    restPart = text.slice(firstPart.length).trim(); // Rest of the text after the number
+                  } else if (lowercaseRegex.test(text.trim())) {
+                    indent = 2; // Lowercase starts, 2 tabs
+                    const match = text.match(lowercaseRegex); // Match the letter and parenthesis/period
+                    firstPart = match ? match[0] : ""; // Get the matched letter (e.g., "a)")
+                    restPart = text.slice(firstPart.length).trim(); // Rest of the text after the letter
+                  } else if (commonIndentRegex.test(text.trim())) {
+                    indent = 3;
+                  } else {
+                    indent = 1; // Default indentation
+                  }
+
+                  return (
+                    <p key={index} style={{ marginLeft: `${indent}em` }}>
+                      <strong>{firstPart}</strong>
+                      {" " + restPart}
+                    </p>
+                  );
+                })}
+              </div>
+            </List.Item>
+          );
+        }}
+      />
+
+      <Pagination
+        align="center"
+        current={currentPage}
+        onChange={handlePagination}
+        total={meta_data.total || 0}
+      />
+    </div>
+  );
 };
 
 export default DataList;

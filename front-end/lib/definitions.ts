@@ -7,16 +7,19 @@ interface ElasticsearchResponse {
       tendemuc: string;  // Sub-title or section
       tenchuong: string; // Chapter title
       tendieu: string;   // Article title or number
-      noidung: string;   // Content of the document
+      noidung: string[];   // Content of the document
     };
   };
 
 export interface dieu{
     tenchude: string;  // Title or subject
-      tendemuc: string;  // Sub-title or section
-      tenchuong: string; // Chapter title
-      tendieu: string;   // Article title or number
-      noidung: string;   // Content of the document
+    tendemuc: string;  // Sub-title or section
+    tenchuong: string; // Chapter title
+    tendieu: string;   // Article title or number
+    noidung: string[];   // Content of the document
+    madieu: string;    // Article ID
+    noidungmadieu: string; // Article content
+
 }
 
   export default ElasticsearchResponse
