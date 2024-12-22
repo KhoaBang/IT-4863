@@ -1,2 +1,5 @@
 "Elasticsearch_config/elasticsearch-analysis-vietnamese" 
 back-end/node_modules/
+front-end/node_modules/
+crawler/node_modules/
+crawler/data

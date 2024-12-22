@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  elastic:
+    image: nguyensikhoabang899/my-elasticsearch-image:latest
+    container_name: elastic
+    environment:
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=23062003
+    ports:
+      - "9200:9200"
+    networks:
+      - tktt_network
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile  # Adjust the path to your Dockerfile if needed
+    container_name: backend
+    environment:
+      - ELASTICSEARCH_NODE=http://elastic:9200
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=23062003
+      - DATA_INDEX=${DATA_INDEX}
+      - PORT=${PORT}
+    ports:
+      - "9999:9999"  # Ensure the port mapping is correct, depending on your .env
+    depends_on:
+      - elastic
+    networks:
+      - tktt_network
+    restart: unless-stopped
+    command: ["wait-for-it", "elastic:9200", "--", "npm", "start"]
+
+networks:
+  tktt_network:
+    driver: bridge

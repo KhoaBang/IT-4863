@@ -18,7 +18,6 @@ const DataView = async (props: {
     // Return the fetched data
     return (
     <div>
-
       <DataList data={documents}/>
     </div>)
   };
