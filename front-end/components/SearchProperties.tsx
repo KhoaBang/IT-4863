@@ -21,7 +21,7 @@ function SearchProperties() {
   return (
     <div>
       <Suspense fallback={<div>Loading...</div>}>
-        <Input.Search
+        <Input
           size="large"
           //   enterButton="Tìm kiếm"
           placeholder="Searching..."

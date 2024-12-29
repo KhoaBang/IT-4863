@@ -7,6 +7,7 @@ WORKDIR /home/node/app
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
+
 RUN apk add --no-cache curl bash && \
     curl -o /usr/local/bin/wait-for-it https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh && \
     chmod +x /usr/local/bin/wait-for-it

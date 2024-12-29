@@ -12,7 +12,7 @@ const sanitizeFolderName = (folderPath) => {
 };
 
 // Function to extract "dieu" and noidung from an HTML file
-const extractDieu = (inputPath, outputPath,tenchude) => {
+const extractDieu = (inputPath, outputPath, tenchude) => {
   const regex = /^([^\s]+(?:\s[^\s]+){1})\s+(.*)$/;
 
   // Load the HTML noidung
@@ -20,35 +20,60 @@ const extractDieu = (inputPath, outputPath,tenchude) => {
   const $ = cheerio.load(htmlContent);
 
   // Extract title from <h3> tag
-  const title = $("h3")
-    .text()
-    .replace(/\n/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
+  const title = $("h3").text().replace(/\n/g, " ").replace(/\s+/g, " ").trim();
 
   let dieuData = [];
   let currentDieu = null;
 
-  let tenchuong =[]
-  tenchuong.push(" ")
+  let tenchuong = [];
+  tenchuong.push(" ");
   // Parse each <p> tag
   $("p").each((index, element) => {
     const $element = $(element);
     if ($element.hasClass("pDieu")) {
       if (currentDieu) dieuData.push(currentDieu);
-      const match = $element.text().match(regex);
-      if (match) {
-        currentDieu = { tenchude:tenchude, tendemuc: title, tenchuong:tenchuong[0], madieu: match[1], noidungmadieu: match[2], noidung: [] };
+      // const match = $element.text().match(regex);
+      if (tenchuong[0]!==" ") {
+        currentDieu = {
+          tenchude: tenchude,
+          tendemuc: title,
+          tenchuong: tenchuong[0],
+          tendieu: $element.text().trim().replace(/\s+/g, " "),
+          // madieu: match[1],
+          // noidungmadieu: match[2],
+          noidung: [],
+        };
       } else {
-        currentDieu = { madieu: $element.text().trim(), noidungmadieu: "", noidung: [] };
+        currentDieu = {
+          tenchude: tenchude,
+          tendemuc: title,
+          tenchuong: "",
+          tendieu: $element.text().trim().replace(/\s+/g, " "),
+          // madieu: $element.text().trim(),
+          // noidungmadieu: "",
+          noidung: [],
+        };
       }
-    } else if (currentDieu && !$element.attr("class")) {
-      if ($element.text().trim()) {
-        currentDieu.noidung.push($element.text().trim());
+    } else if (currentDieu && (!$element.attr("class")||$element.hasClass("MsoNormal"))) {
+      // Get all text, including from child elements
+      const textContent = $element
+        .contents()
+        .map((_, node) => $(node).text().trim().replace(/\s+/g, " "))
+        .get()
+        .join(" ");
+
+      if (textContent) {
+        currentDieu.noidung.push(textContent);
       }
-    } else if ($element.hasClass("pChuong") && $element.next().hasClass("pChuong")) {// element next is a pChuong also then concat the 2 text
-      tenchuong.pop()
-      tenchuong.push($element.text().trim() + ": " + $element.next().text().trim());
+    } else if (
+      $element.hasClass("pChuong") &&
+      $element.next().hasClass("pChuong")
+    ) {
+      // element next is a pChuong also then concat the 2 text
+      tenchuong.pop();
+      tenchuong.push(
+        $element.text().trim() + ": " + $element.next().text().trim()
+      );
     }
   });
 
@@ -64,27 +89,26 @@ const extractDieu = (inputPath, outputPath,tenchude) => {
 
 // Function to process all HTML files in a folder
 const processHtmlFilesInFolder = (folderPath, tenchude) => {
-    fs.readdirSync(folderPath).forEach((file) => {
-      if (file.endsWith(".html")) {
-        const inputPath = path.join(folderPath, file);
-  
-        // Check if the file is empty
-        if (fs.statSync(inputPath).size === 0) {
-          console.log(`Skipping empty file: ${inputPath}`);
-          return; // Skip empty files
-        }
-  
-        const outputFileName = file.replace(".html", ".json");
-        const outputPath = path.join(folderPath, outputFileName);
-  
-        console.log(`Processing HTML: ${inputPath}`);
-        
-        // Assuming extractDieu is asynchronous
-        extractDieu(inputPath, outputPath,tenchude);
+  fs.readdirSync(folderPath).forEach((file) => {
+    if (file.endsWith(".html")) {
+      const inputPath = path.join(folderPath, file);
+
+      // Check if the file is empty
+      if (fs.statSync(inputPath).size === 0) {
+        console.log(`Skipping empty file: ${inputPath}`);
+        return; // Skip empty files
       }
-    });
-  };
-  
+
+      const outputFileName = file.replace(".html", ".json");
+      const outputPath = path.join(folderPath, outputFileName);
+
+      console.log(`Processing HTML: ${inputPath}`);
+
+      // Assuming extractDieu is asynchronous
+      extractDieu(inputPath, outputPath, tenchude);
+    }
+  });
+};
 
 // Function to merge all JSON files in a folder
 const mergeJsonFilesInFolder = (folderPath, outputFilePath) => {
@@ -110,17 +134,20 @@ const mergeJsonFilesInFolder = (folderPath, outputFilePath) => {
 const processAllFolders = (rootPath) => {
   fs.readdirSync(rootPath).forEach((folder) => {
     const folderPath = path.join(rootPath, folder);
-    const tenchude =[]
+    const tenchude = [];
     if (fs.statSync(folderPath).isDirectory()) {
       console.log(`\nProcessing folder: ${folderPath}`);
 
-    //get ten chude
-        tenchude.push(folder.replace(/_/g, "").trim())
+      //get ten chude
+      tenchude.push(folder.replace(/_/g, "").trim());
       // Step 1: Extract all HTML files into JSON
       processHtmlFilesInFolder(folderPath, tenchude[0]);
-      tenchude.pop()
+      tenchude.pop();
       // Step 2: Merge all JSON files in the folder
-      const outputFileName = `${sanitizeFolderName(folderPath).replace(/_/g, "")}.json`;
+      const outputFileName = `${sanitizeFolderName(folderPath).replace(
+        /_/g,
+        ""
+      )}.json`;
       const outputFilePath = path.join(rootPath, outputFileName);
       mergeJsonFilesInFolder(folderPath, outputFilePath);
     }
@@ -145,9 +172,8 @@ const mergeAllJsonFiles = (rootPath, outputFilePath) => {
       if (jsonData.length === 0) {
         return; // Exit current iteration of forEach loop if jsonData is empty
       }
-      
-      mergedData.push(...jsonData); // Spread operator to merge arrays
 
+      mergedData.push(...jsonData); // Spread operator to merge arrays
     }
   });
 

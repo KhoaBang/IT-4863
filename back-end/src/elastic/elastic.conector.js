@@ -1,7 +1,7 @@
 require("dotenv").config();
+const fs = require("fs").promises;
+const path = require("path");
 const { Client } = require("@elastic/elasticsearch");
-const data = require("./data.json"); // Adjust path as needed
-const settings = require("./settings.json"); // Adjust path as needed
 
 const client = new Client({
   node: process.env.ELASTICSEARCH_NODE || "http://localhost:9200",
@@ -12,61 +12,86 @@ const client = new Client({
 });
 
 const index_name = process.env.DATA_INDEX || "law";
+const test_index_name = process.env.TEST_DATA_INDEX || "test";
+const settings = require("./settings.json");
+const data = require("./maindata/data.json");
+
+async function checkOrCreateIndex(indexName, mappings) {
+  const exists = await client.indices.exists({ index: indexName });
+  if (exists) {
+    console.log(`Index "${indexName}" already exists.`);
+  } else {
+    await client.indices.create({
+      index: indexName,
+      body: {
+        settings: settings.settings,
+        mappings,
+      },
+    });
+    console.log(`Index "${indexName}" created.`);
+  }
+}
+// push data to main index
+async function bulkIndexData(indexName, documents) {
+  const bulkData = documents.flatMap((doc) => [
+    { index: { _index: indexName } },
+    doc,
+  ]);
+
+  const bulkResponse = await client.bulk({ refresh: true, body: bulkData });
+
+  if (bulkResponse.errors) {
+    const erroredDocuments = bulkResponse.items.filter(
+      (item) => item.index && item.index.error
+    );
+    console.error(`Errors occurred while indexing into "${indexName}":`, erroredDocuments);
+  } else {
+    console.log(`Data successfully indexed into "${indexName}".`);
+  }
+}
+
+//push data to test index
+async function loadTestData(folderPath, indexName) {
+  const files = await fs.readdir(folderPath);
+  const allDocuments = [];
+
+  for (const file of files) {
+    const filePath = path.join(folderPath, file);
+    if (path.extname(file) === ".json") {
+      const fileContent = await fs.readFile(filePath, "utf-8");
+      const jsonData = JSON.parse(fileContent);
+      allDocuments.push(...jsonData);
+    }
+  }
+
+  await bulkIndexData(indexName, allDocuments);
+}
 
 (async () => {
   try {
-    // Check Elasticsearch connection
-    // throw new Error(settings.settings.analysis);
-    console.log("Elasticsearch Node:", process.env.ELASTICSEARCH_NODE);
-    console.log("Elasticsearch Username:", process.env.ELASTICSEARCH_USERNAME);
-    console.log("Elasticsearch Password:", process.env.ELASTICSEARCH_PASSWORD);
-    console.log("Index name:", process.env.DATA_INDEX);
+    console.log("Connecting to Elasticsearch...");
     await client.ping();
     console.log("Successfully connected to Elasticsearch.");
 
-    // Check if the index already exists
-    const exists = await client.indices.exists({ index: index_name });
-    if (exists) {
-      console.log(`Index "${index_name}" already exists.`);
-    } else {
-      // Create the index with dynamic mapping
-      await client.indices.create({
-        index: index_name,
-        body: {
-          settings: settings.settings,
-          mappings: {
-            dynamic: true, // Enable dynamic mapping
-            properties: {
-              // This will apply the custom analyzer to all text fields
-              "*": {
-                type: "text",
-                analyzer: "legal_vi_analyzer", // Use the custom analyzer
-              },
-            },
-          },
+    const mappings = {
+      dynamic: true,
+      properties: {
+        "*": {
+          type: "text",
+          analyzer: "legal_vi_analyzer",
         },
-      });
+      },
+    };
 
-      // Prepare bulk indexing data
-      const bulkData = data.flatMap((doc) => [
-        { index: { _index: index_name } },
-        doc,
-      ]);
+    // Handle main index
+    await checkOrCreateIndex(index_name, mappings);
+    await bulkIndexData(index_name, data);
 
-      // Perform bulk indexing
-      const bulkResponse = await client.bulk({ refresh: true, body: bulkData });
+    // Handle test data index
+    await checkOrCreateIndex(test_index_name, mappings);
+    const testdataFolder = path.resolve(__dirname, "testdata");
+    await loadTestData(testdataFolder, test_index_name);
 
-      // Check for bulk errors
-      if (bulkResponse.errors) {
-        const erroredDocuments = bulkResponse.items.filter(
-          (item) => item.index && item.index.error
-        );
-        console.error("Errors occurred while indexing:", erroredDocuments);
-      } else {
-        console.log("Data successfully indexed.");
-      }
-      console.log(`Index "${index_name}" created.`);
-    }
   } catch (error) {
     console.error("An error occurred:", error);
   }

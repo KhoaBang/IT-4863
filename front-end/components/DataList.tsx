@@ -28,7 +28,7 @@ const DataList: React.FC<IDataListProps> = ({ data }) => {
 
   // Check for empty results
   if (results.length === 0) {
-    return <div>No results found.</div>;
+    return <div style={{ textAlign: "center" }}>No results found.</div>;
   }
 
   return (
@@ -37,6 +37,7 @@ const DataList: React.FC<IDataListProps> = ({ data }) => {
         itemLayout="vertical"
         size="large"
         dataSource={results}
+        style={{ textAlign: "left" }}
         renderItem={(item) => {
           const content = (
             <div>
@@ -55,8 +56,8 @@ const DataList: React.FC<IDataListProps> = ({ data }) => {
                   alignItems: "center", // Ensures the items are vertically aligned
                 }}
               >
-                <b>{item.noidungmadieu}</b>
-                <Popover content={content} title={item.madieu} trigger="hover">
+                <b>{item.tendieu}</b>
+                <Popover content={content} title={item.tendieu} trigger="hover">
                 <Button type="primary">Chi tiết</Button>
                 </Popover>
               </div>
@@ -91,7 +92,7 @@ const DataList: React.FC<IDataListProps> = ({ data }) => {
 
                   return (
                     <p key={index} style={{ marginLeft: `${indent}em` }}>
-                      <strong>{firstPart}</strong>
+                      <i>{firstPart}</i>
                       {" " + restPart}
                     </p>
                   );
