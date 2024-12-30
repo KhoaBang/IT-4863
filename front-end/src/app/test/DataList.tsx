@@ -45,7 +45,7 @@ const DataList: React.FC<IDataListProps> = ({ data }) => {
         style={{ textAlign: "left" }}
         renderItem={(item) => {
           return (
-            <List.Item key={item.link}>
+            <List.Item key={item?.link||" "}>
               <div
                 style={{
                   display: "flex",
@@ -53,19 +53,25 @@ const DataList: React.FC<IDataListProps> = ({ data }) => {
                   alignItems: "center", // Ensures the items are vertically aligned
                 }}
               >
-                <b>{item.title}</b>
-                <Popover content={item.link} title={item.title} trigger="hover">
+                <b>{item?.title||" "}</b>
+                <Popover content={item?.link||" "} title={item?.title||" "} trigger="hover">
                 <Button type="primary">Chi tiết</Button>
                 </Popover>
               </div>
+              {item?.content &&
               <div>
-                {item.content.split("\n").map((line, index) => (
+                {item?.content.split("\n").map((line, index) => (
                   <span key={index}>
                     {line}
                     <br />
                   </span>
                 ))}
-              </div>
+              </div>}
+              {
+                !item?.content&&<div>
+                  No content
+                </div>
+              }
             </List.Item>
           );
         }}
